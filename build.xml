@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<project name="IntrafacePublic_ContactLogin" basedir="./" default="make">
+    <property file="./build.properties" />
+    <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
+    <taskdef classname="phing.tasks.ext.FtpDeployTask" name="ftpdeploy" />
+
+    <property name="package-name" value="${phing.project.name}" />
+    <property name="version" value="0.2.0" />
+    <property name="stability" value="alpha" />
+    <property name="build.dir" value="./build/" />
+    <property name="source.dir" value="./src/" />
+
+    <target name="export">
+        <echo msg="Exporting SVN files" />
+        <delete dir="${build.dir}" />
+        <exec command="svn export ${source.dir} ${build.dir}" />
+    </target>
+
+    <target name="build" depends="export">
+        <d51pearpkg2 dir="${build.dir}" baseinstalldir="/">
+            <name>${package-name}</name>
+            <summary>Campsommer</summary>
+            <channel>public.intraface.dk</channel>
+            <description>
+                <!--        Don't exceed this width         -->
+                Kundelogin
+            </description>
+
+            <lead user="lsolesen" name="Lars Olesen" email="lars@legestue.net" />
+            <license>LGPL</license>
+
+            <version release="${version}" api="${version}" />
+            <stability release="${stability}" api="${stability}" />
+
+            <dirroles key="www">web</dirroles>
+
+            <release>
+                <install as="index.php" name="www/index.php" />
+            </release>
+
+            <dependencies>
+                <php minimum_version="5.2.0" />
+
+                <pear minimum_version="1.6.0"
+                      recommended_version="1.6.1" />
+
+                <package name="konstrukt"
+                         channel="public.intraface.dk"
+                         minimum_version="0.4.0" />
+                <package name="IntrafacePublic_Newsletter_Client_XMLRPC"
+                         channel="public.intraface.dk"
+                         minimum_version="0.2.0" />
+                <package name="IntrafacePublic_Contact_Client_XMLRPC"
+                         channel="public.intraface.dk"
+                         minimum_version="0.1.0" />
+            	<package name="IntrafacePublic_Admin_Client_XMLRPC"
+                         channel="public.intraface.dk"
+	             		 minimum_version="0.1.0" />
+            	<package name="IntrafacePublic_Debtor_Client_XMLRPC"
+                         channel="public.intraface.dk"
+	             		 minimum_version="0.1.0" />
+            	<package name="Ilib_ClassLoader"
+                         channel="public.intraface.dk"
+                         minimum_version="0.1.0" />
+                <package name="ilib_recursive_array_map"
+                         channel="public.intraface.dk"
+                         minimum_version="0.1.0" />
+            </dependencies>
+            <notes>
+                None
+            </notes>
+        </d51pearpkg2>
+    </target>
+
+    <target name="make" depends="build">
+        <echo msg="Creating PEAR archive file for ${package-name}" />
+        <mkdir dir="${build.dir}${package-name}-${version}" />
+        <copy todir="${build.dir}${package-name}-${version}">
+            <fileset dir="${build.dir}">
+                <include name="**" />
+                <exclude name="config.local.php" />
+            </fileset>
+        </copy>
+        <delete file="${package-name}-${version}.tgz" />
+        <tar compression="gzip" destfile="${package-name}-${version}.tgz" basedir="${build.dir}" />
+    </target>
+
+
+    <target name="deploy" depends="make">
+        <echo msg="Deploying package" />
+        <ftpdeploy host="${ftp.server}" username="${ftp.user}" password="${ftp.password}" port="21" dir="./" mode="binary" clearfirst="false">
+            <fileset dir="./">
+                <include name="${package-filename}" />
+            </fileset>
+        </ftpdeploy>
+    </target>
+
+</project>

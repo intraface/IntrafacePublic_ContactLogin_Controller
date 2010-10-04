@@ -17,7 +17,7 @@ class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
         $contact_array = $contact->getContact($this->identity()->user());
         $data = array('contact' => $contact_array);
 
-        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/contact.tpl.php');
+        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/contact');
         return $smarty->render($this, $data);
     }
 
@@ -39,7 +39,7 @@ class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
         ));
 
         $data = array('form' => $this->getForm()->toHTML(), 'msg' => '');
-        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/edit.tpl.php');
+        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/edit');
         return $smarty->render($this, $data);
     }
 

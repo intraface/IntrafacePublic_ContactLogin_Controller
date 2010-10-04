@@ -13,9 +13,8 @@ class IntrafacePublic_ContactLogin_Controller_Logout extends k_Component
     protected $template;
     protected $registry;
 
-    function __construct(k_TemplateFactory $template, k_Registry $registry)
+    function __construct(k_Registry $registry)
     {
-        $this->template = $template;
         $this->registry = $registry;
     }
 

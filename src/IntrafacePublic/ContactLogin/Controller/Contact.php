@@ -2,11 +2,13 @@
 class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
 {
     protected $registry;
-    private $form;
+    protected $form;
+    protected $template;
 
-    function __construct(k_Registry $registry)
+    function __construct(k_Registry $registry, k_TemplateFactory $template)
     {
         $this->registry = $registry;
+        $this->template = $template;
     }
 
     function renderHtml()
@@ -15,27 +17,8 @@ class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
         $contact_array = $contact->getContact($this->identity()->user());
         $data = array('contact' => $contact_array);
 
-        $smarty = new k_Template(dirname(__FILE__) . '/../templates/contact.tpl.php');
+        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/contact.tpl.php');
         return $smarty->render($this, $data);
-    }
-
-    function getForm()
-    {
-        if ($this->form) {
-            return $this->form;
-        }
-
-        $form = new HTML_QuickForm('edit', 'POST', $this->url());
-        $form->addElement('hidden', 'id');
-        $form->addElement('text', 'name', $this->t('Name'), array('size' => 40));
-        $form->addElement('text', 'address', $this->t('Address'),  array('size' => 40));
-        $form->addElement('text', 'postcode', $this->t('Zip code'),  array('size' => 4));
-        $form->addElement('text', 'city', $this->t('City'),  array('size' => 40));
-        $form->addElement('text', 'email', $this->t('Email'),  array('size' => 40));
-        $form->addElement('text', 'phone', $this->t('Phone'),  array('size' => 8));
-        $form->addElement('submit', NULL, $this->t('Save'));
-
-        return ($this->form = $form);
     }
 
     function renderHtmlEdit()
@@ -56,7 +39,7 @@ class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
         ));
 
         $data = array('form' => $this->getForm()->toHTML(), 'msg' => '');
-        $smarty = new k_Template(dirname(__FILE__) . '/../templates/edit.tpl.php');
+        $smarty = $this->template->create(dirname(__FILE__) . '/../templates/edit.tpl.php');
         return $smarty->render($this, $data);
     }
 
@@ -74,5 +57,24 @@ class IntrafacePublic_ContactLogin_Controller_Contact extends k_Component
             }
         }
         return $this->render();
+    }
+
+    function getForm()
+    {
+        if ($this->form) {
+            return $this->form;
+        }
+
+        $form = new HTML_QuickForm('edit', 'POST', $this->url());
+        $form->addElement('hidden', 'id');
+        $form->addElement('text', 'name', $this->t('Name'), array('size' => 40));
+        $form->addElement('text', 'address', $this->t('Address'),  array('size' => 40));
+        $form->addElement('text', 'postcode', $this->t('Zip code'),  array('size' => 4));
+        $form->addElement('text', 'city', $this->t('City'),  array('size' => 40));
+        $form->addElement('text', 'email', $this->t('Email'),  array('size' => 40));
+        $form->addElement('text', 'phone', $this->t('Phone'),  array('size' => 8));
+        $form->addElement('submit', NULL, $this->t('Save'));
+
+        return ($this->form = $form);
     }
 }
